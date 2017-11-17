@@ -47,7 +47,9 @@ int main () {
 
 	//bucle per recorrer tots els nivells (max = 26 = 1Ah)
 	for (nivell = 0b0; nivell < 0x001A; nivell += 8) {
-		for (quintaulell = 0b0; quintaulell < )
+		for (quintaulell = 0b0; quintaulell < 0x0100; quintaulell++) {
+			fprintf(f_comb, ":10%.4X\n");
+		}
 	}
 
 	// Indiquem el EOF per acabar
