@@ -44,7 +44,6 @@ int main () {
 
 	uint8_t nivell;
 	uint8_t quintaulell;
-	int NPAPB = 0;
 
 	//bucle per recorrer tots els nivells (max = 26 = 1Ah)
 	for (nivell = 0b0; nivell < 0x001A; nivell += 8) {
