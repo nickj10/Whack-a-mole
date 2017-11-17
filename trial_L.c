@@ -40,7 +40,7 @@ uint8_t calculateCheckSum(char num[MAXBITS]) {
 }
 
 int main () {
-	FILE *f_comb = fopen("comb_taulell.hex", "w");
+	FILE *f_comb = fopen("comb_taulell_L.hex", "w");
 
 	uint8_t nivell;
 	uint8_t quintaulell;
