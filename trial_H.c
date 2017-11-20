@@ -1,7 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
+#include <time.h>
 
 #define MAXBITS 8
+#define MAXTAULELLS 256
 
 uint8_t convertToHex(char c) {
 	if (c >= '0' && c <= '9') {
@@ -22,6 +25,7 @@ uint8_t convertToHex(char c) {
 				return 0x0F;
 		}
 	}
+	return 0x00;
 }
 
 uint8_t calculateCheckSum(char num[MAXBITS]) {
@@ -41,17 +45,40 @@ uint8_t calculateCheckSum(char num[MAXBITS]) {
 
 int main () {
 	FILE *f_comb = fopen("comb_taulell_H.hex", "w");
-
+	
+	srand(time(NULL));
+	
 	uint8_t nivell;
-	uint8_t quintaulell;
+	uint16_t quintaulell;
+	uint16_t dir;
+	uint8_t taulell_random[MAXTAULELLS];
+	int i, j;
 
-	//bucle per recorrer tots els nivells (max = 26 = 1Ah)
-	for (nivell = 0b0; nivell < 0x001A; nivell += 8) {
-		for (quintaulell = 0b0; quintaulell < 0x0100; quintaulell++) {
-			fprintf(f_comb, ":10%.4X\n");
+	for (nivell = 0b0; nivell < 0x1A; nivell++) {
+		for (i = 0; i < 256; i++) {
+			if (nivell >= 0x0F && i == 0) {
+				taulell_random[i] = 0xFF;
+			}
+			else {
+				taulell_random[i] = rand() & nivell;
+			}
+		}
+	
+		// Inicialitzem
+		quintaulell = 0b0;
+		dir = nivell << 8;
+		dir |= quintaulell;
+		j = 0;
+		while (j < 32) {
+			fprintf (f_comb, ":10%.4X", dir);
+			for (i = 0; i < 7; i++) {
+				fprintf (f_comb, "%.4X", taulell_random[i]);
+			}
+			printf ("\n");
+			dir += 8;
 		}
 	}
-
+	
 	// Indiquem el EOF per acabar
 	fprintf(f_comb, ":00000001FF\n");
 	fclose(f_comb);
