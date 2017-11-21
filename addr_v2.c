@@ -119,6 +119,12 @@ int main (void) {
 	}
 		
 	//}
+
+		fprintf (f, "%.2X\n", checksum1);
+		fprintf (g, "%.2X\n", checksum2);
+	}
+		
+	//}
 	/*
 	// Indiquem el EOF per acabar
 	fprintf (f, ":00000001FF\n");
