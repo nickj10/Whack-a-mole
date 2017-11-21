@@ -47,36 +47,39 @@ int main (void) {
 	uint8_t num2 = 0b0;
 	FILE * f = fopen ("out_high.hex", "w");
 	FILE * g = fopen ("out_low.hex", "w");
-	int i, k;	
+	int i, k;
+	uint16_t checksum1;
+	uint16_t checksum2;	
 
 	int array[16];
-	//printf ("Hexadecimal generado: %.2X\n", num1);
-	//printf ("Hexadecimal generado 2: %.2X\n", num2);
 //	for (nivell = 0b0; nivell < 0x1A; nivell++) {
 	nivell = 0x00;		
+//	for (nivell = 0b0; nivell < 0x02; nivell++) {
 	quintaulell = 0b0;
 
-	llenarArray (array,1);
-	/*printf ("Shuffled array: ");	
-	for (i = 0; i < 16; i++)
-		printf ("%d ", array[i]);
-	printf ("\n");
-	for (i = 0; i < 8; i++) {
-		num1 = num1 << 1;
-		num1 |= array[i];
-	}
-	for (i = 8; i < 16; i++) {
-		num2 = num2 << 1;
-		num2 |= array[i];
-	}
-*/
+	llenarArray (array, 3);
+	
 	while (quintaulell < 0x100) {
+		checksum1 = 0x10;
+		checksum1 += (quintaulell & 0x0F);
+		checksum1 += (quintaulell >> 4);
+		checksum1 += (nivell & 0x0F);
+		checksum1 += (nivell >> 4);
+
+		checksum2 = 0x10;
+		checksum2 += (quintaulell & 0x0F);
+		checksum2 += (quintaulell >> 4);
+		checksum2 += (nivell & 0x0F);
+		checksum2 += (nivell >> 4);
+		
 		dir = nivell << 8;
 		dir |= quintaulell;
 			
 		fprintf (f, ":10%.4X00", dir);
 		fprintf (g, ":10%.4X00", dir);
 		i = 0;
+
+
 		while (i < 8) {
 			
 			shuffle (array, 16);
@@ -88,15 +91,33 @@ int main (void) {
 				num2 = num2 << 1;
 				num2 |= array[k];
 			}
+			checksum1 += num1;
+			checksum2 += num2;
+
 			fprintf (g, "%.2X", num2);
 			fprintf (f, "%.2X", num1);
 			i++;
 			quintaulell++;
 		}
-		fprintf (f, "\n");
-		fprintf (g, "\n");
+		checksum1 = checksum1 & 0xFF;
+		printf ("checksum parcial 1: %.4X\n", checksum1);
+		checksum2 = checksum2 & 0xFF;
+		printf ("checksum parcial 2: %.4X\n", checksum2);
+		
+		// Convertir en Ca2
+		checksum1 = ~checksum1;
+		checksum2 = ~checksum2;
+		checksum1 += 1;
+		checksum2 += 1;
+		
+		// Quitar FF delante
+		checksum1 &= 0xFF;
+		checksum2 &= 0xFF;
+
+		fprintf (f, "%.2X\n", checksum1);
+		fprintf (g, "%.2X\n", checksum2);
 	}
 		
-//	}
+	//}
 
 }
