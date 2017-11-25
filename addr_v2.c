@@ -45,21 +45,42 @@ int main (void) {
 	uint8_t nivell;
 	uint8_t num1 = 0b0;
 	uint8_t num2 = 0b0;
-	FILE * f = fopen ("out_high.hex", "w");
-	FILE * g = fopen ("out_low.hex", "w");
+	FILE * f = fopen ("out_high.hex", "a");
+	FILE * g = fopen ("out_low.hex", "a");
 	int i, k;
 	uint16_t checksum1;
 	uint16_t checksum2;	
+	int level;
+	int table;
+	int rand_num;
+	int rand_table;
+	int max_num, min_num;	
 
 	int array[16];
-//	for (nivell = 0b0; nivell < 0x1A; nivell++) {
-	nivell = 0x00;		
-//	for (nivell = 0b0; nivell < 0x02; nivell++) {
+	//nivell = 0x06;
+	nivell = 0x0F;		
 	quintaulell = 0b0;
-
-	llenarArray (array, 3);
+	//level = 7;
+	level = 16;
+	while (level <= 26) {
 	
+	// reinicialitzar quintaulell
+	quintaulell = 0b0;
+	table = 0;
+	rand_table = rand() % 257; // un taulell random de los 256 que tiene todos los LEDs encendidos	
 	while (quintaulell < 0x100) {
+		if (table == rand_table) {
+			// Todos los LEDs encendidos
+			llenarArray (array, 16);
+		}
+		else {
+			// Genera un array con [level-3,level] LEDs encendidos
+			max_num = level;
+			min_num = level - 15;
+			rand_num = rand() % (max_num + 1 - min_num) + min_num;
+			// Llenamos el array con 1s 
+			llenarArray (array, rand_num);
+		}
 		checksum1 = 0x10;
 		checksum1 += (quintaulell & 0x0F);
 		checksum1 += (quintaulell >> 4);
@@ -81,12 +102,15 @@ int main (void) {
 
 
 		while (i < 8) {
-			
+			// ordenar el array aleatoriamente
 			shuffle (array, 16);
 			for (k = 0; k < 8; k++) {
 				num1 = num1 << 1;
 				num1 |= array[k];
 			}
+			
+			// cálculo del checksum:
+			// sumarlo todo
 			for (k = 8; k < 16; k++) {
 				num2 = num2 << 1;
 				num2 |= array[k];
@@ -98,11 +122,14 @@ int main (void) {
 			fprintf (f, "%.2X", num1);
 			i++;
 			quintaulell++;
+			table++;
 		}
+		
+		
 		checksum1 = checksum1 & 0xFF;
-		printf ("checksum parcial 1: %.4X\n", checksum1);
+		//printf ("checksum parcial 1: %.4X\n", checksum1);
 		checksum2 = checksum2 & 0xFF;
-		printf ("checksum parcial 2: %.4X\n", checksum2);
+		//printf ("checksum parcial 2: %.4X\n", checksum2);
 		
 		// Convertir en Ca2
 		checksum1 = ~checksum1;
@@ -113,23 +140,20 @@ int main (void) {
 		// Quitar FF delante
 		checksum1 &= 0xFF;
 		checksum2 &= 0xFF;
-
+		
+		// Imprimir el checksum
 		fprintf (f, "%.2X\n", checksum1);
 		fprintf (g, "%.2X\n", checksum2);
-	}
-		
-	//}
 
-		fprintf (f, "%.2X\n", checksum1);
-		fprintf (g, "%.2X\n", checksum2);
-	}
-		
-	//}
-	/*
+	} // end quintaulell while
+	level++;
+	nivell++;
+	} // end level while
+	
 	// Indiquem el EOF per acabar
 	fprintf (f, ":00000001FF\n");
 	fprintf (g, ":00000001FF\n");
-	*/
+	
 	fclose(f);
 	fclose(g);
 	return 0;
