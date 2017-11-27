@@ -45,8 +45,8 @@ int main (void) {
 	uint8_t nivell;
 	uint8_t num1 = 0b0;
 	uint8_t num2 = 0b0;
-	FILE * f = fopen ("out_high.hex", "a");
-	FILE * g = fopen ("out_low.hex", "a");
+	FILE * f = fopen ("out_high3.hex", "w");
+	FILE * g = fopen ("out_low3.hex", "w");
 	int i, k;
 	uint16_t checksum1;
 	uint16_t checksum2;	
@@ -55,31 +55,50 @@ int main (void) {
 	int rand_num;
 	int rand_table;
 	int max_num, min_num;	
-
+	int sub;
 	int array[16];
+
+	nivell = 0x00;
 	//nivell = 0x06;
-	nivell = 0x0F;		
+	//nivell = 0x0F;		
 	quintaulell = 0b0;
+	level = 1;
 	//level = 7;
-	level = 16;
+	//level = 16;
+	table = 0;
+	rand_table = 1;
 	while (level <= 26) {
 	
 	// reinicialitzar quintaulell
 	quintaulell = 0b0;
-	table = 0;
-	rand_table = rand() % 257; // un taulell random de los 256 que tiene todos los LEDs encendidos	
+	if (level >= 16) {
+		table = 0;
+		rand_table = rand() % 257; // un taulell random de los 256 que tiene todos los LEDs encendidos	
+	}
 	while (quintaulell < 0x100) {
-		if (table == rand_table) {
+		if (table == rand_table && level >= 16) {
 			// Todos los LEDs encendidos
 			llenarArray (array, 16);
 		}
 		else {
-			// Genera un array con [level-3,level] LEDs encendidos
-			max_num = level;
-			min_num = level - 15;
-			rand_num = rand() % (max_num + 1 - min_num) + min_num;
-			// Llenamos el array con 1s 
-			llenarArray (array, rand_num);
+			if (level >= 7 && level < 16) {
+				sub = 3;
+			}
+			else if (level >= 16) {
+				sub = 15;
+			}
+			if (level < 7) { // PARA NIVELES 1 -6
+				llenarArray (array, level);
+			}
+			else {
+				// Genera un array con [level-3,level] LEDs encendidos
+				max_num = level;
+				min_num = level - sub;
+				rand_num = rand() % (max_num + 1 - min_num) + min_num;
+
+				// Llenamos el array con 1s 
+				llenarArray (array, rand_num);
+			}
 		}
 		checksum1 = 0x10;
 		checksum1 += (quintaulell & 0x0F);
