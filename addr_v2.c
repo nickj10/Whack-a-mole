@@ -14,10 +14,6 @@ void llenarArray (int array[16], int nivell) {
 		}
 		i++;
 	}
-	printf ("Array generada: ");
-	for (i = 0; i < 16; i++)
-		printf ("%d ", array[i]);
-	printf ("\n");
 }
 
 void shuffle (int array[16], int max) {
@@ -34,7 +30,14 @@ void shuffle (int array[16], int max) {
 			array[i] = temp;
 		}
 	}
+
+/*	printf ("Array generada: ");
+	for (i = 0; i < 16; i++)
+		printf ("%d ", array[i]);
+	printf ("\n");
+*/
 }
+
 
 int main (void) {
 
@@ -101,16 +104,23 @@ int main (void) {
 			}
 		}
 		checksum1 = 0x10;
-		checksum1 += (quintaulell & 0x0F);
+		printf ("Checksum hhhhh: %.4X\n", checksum1);
+		checksum1 += nivell;
+		checksum1 += quintaulell;
+		/*checksum1 += (quintaulell & 0x0F);
 		checksum1 += (quintaulell >> 4);
 		checksum1 += (nivell & 0x0F);
 		checksum1 += (nivell >> 4);
-
+		printf ("Checksum iiiii after adding dir: %.4X\n", checksum1);
+		checksum1 += (quintaulell & 0x0F);
+		*/
 		checksum2 = 0x10;
-		checksum2 += (quintaulell & 0x0F);
+		checksum2 += nivell;
+		checksum2 += quintaulell;
+		/*checksum2 += (quintaulell & 0x0F);
 		checksum2 += (quintaulell >> 4);
 		checksum2 += (nivell & 0x0F);
-		checksum2 += (nivell >> 4);
+		checksum2 += (nivell >> 4);*/
 		
 		dir = nivell << 8;
 		dir |= quintaulell;
@@ -120,7 +130,7 @@ int main (void) {
 		i = 0;
 
 
-		while (i < 8) {
+		while (i < 16) {
 			// ordenar el array aleatoriamente
 			shuffle (array, 16);
 			for (k = 0; k < 8; k++) {
@@ -134,8 +144,15 @@ int main (void) {
 				num2 = num2 << 1;
 				num2 |= array[k];
 			}
+			if (level < 4) {
+				printf ("Array generada: ");
+				for (k = 0; k < 16; k++)
+					printf ("%d ", array[k]);
+				printf ("\n");
+			}
 			checksum1 += num1;
 			checksum2 += num2;
+		printf ("Checksum after adding tablero %.4X: %.4X\n", num1, checksum1);
 
 			fprintf (g, "%.2X", num2);
 			fprintf (f, "%.2X", num1);
@@ -163,7 +180,9 @@ int main (void) {
 		// Imprimir el checksum
 		fprintf (f, "%.2X\n", checksum1);
 		fprintf (g, "%.2X\n", checksum2);
-
+		printf ("Checksum final 1: %.4X\n", checksum1);	
+		checksum1 = 0x10;
+		checksum2 = 0x10;
 	} // end quintaulell while
 	level++;
 	nivell++;
