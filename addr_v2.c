@@ -61,7 +61,7 @@ int main (void) {
 	int sub;
 	int array[16];
 
-	nivell = 0x00;
+	nivell = 0x1F;
 	//nivell = 0x06;
 	//nivell = 0x0F;		
 	quintaulell = 0b0;
@@ -185,7 +185,7 @@ int main (void) {
 		checksum2 = 0x10;
 	} // end quintaulell while
 	level++;
-	nivell++;
+	nivell--;
 	} // end level while
 	
 	// Indiquem el EOF per acabar
